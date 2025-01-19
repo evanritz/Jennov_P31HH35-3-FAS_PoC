@@ -61,3 +61,6 @@ Stage 3 Gadget: Trigger sprintf function to store the command (offset in the glo
 
 ### PoC in Action
 
+https://github.com/user-attachments/assets/57723113-e430-478e-afd2-f1e90cd6da2e
+
+
