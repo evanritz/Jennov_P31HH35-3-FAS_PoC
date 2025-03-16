@@ -6,11 +6,15 @@ the endpoint /api/v1/group-list to perform a remote command injection.
 
 This PoC enables debugging code left within ajy.cgi by the developer (Jennov). Once enabled, user input (such as a command) is stored within a global debug buffer that is then fed to the system function to trigger a command injection.
 
-Working on Firmware Version: **01.10100.10.50** (Latest as of 01-18-2025).
+Working on Firmware Version: **01.10100.10.50** (Latest as of 03-15-2025).
 
 PoC can work on older firmware versions, but may require offsets to be slightly changed.
 
 Limitation: For this PoC to work, the targeted device **MUST** have an SD card installed.
+
+### Vulnerability Report:
+
+Vulnerability report with possible solutions can be found [here](vuln_report.pdf). This document along with the PoC were provided to the manufacturer. No response has been received from the manufacturer.
 
 ### Overview of PoC:
 
@@ -40,7 +44,7 @@ Stage 1 Gadget: Trigger save_to_file function to write arbitrary data to web_deb
         00401624 30 00 bd 27     _addiu     sp,sp,0x30
 ```
 
-Stage 2 Gadget: Trigger rename function to rename web_debug.log to cgiDebug to enable debugging. Debug print outs that can include user input are now stored in global debug buffer before being written to web_debug.log file.
+Stage 2 Gadget: Trigger rename function to rename web_debug.log file to cgiDebug file to enable debugging. Debug print outs that can include user input are now stored in global debug buffer before being written to web_debug.log file.
 
 ```
         00402968 20 00 a5 27     addiu      a1,sp,0x20
